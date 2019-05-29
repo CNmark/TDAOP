@@ -1,0 +1,76 @@
+apply plugin: 'groovy'
+
+targetCompatibility = JavaVersion.VERSION_1_7
+sourceCompatibility = JavaVersion.VERSION_1_7
+
+dependencies {
+    implementation gradleApi()//gradle sdk
+    implementation localGroovy()//groovy sdk
+    implementation 'com.android.tools.build:gradle:3.4.1'
+    implementation 'org.aspectj:aspectjtools:1.8.9'
+    implementation 'org.aspectj:aspectjrt:1.8.9'
+}
+
+apply from: "../JitPackUpload.gradle"
+group='com.tdlbs.mark'
+version = "1.0.1"
+//---------------------------------------------
+def siteUrl = 'http://www.tdlbs.com'
+def gitUrl = 'http://www.tdlbs.com'
+
+install {
+    repositories.mavenInstaller {
+        // 生成pom.xml和参数
+        pom {
+            project {
+                packaging 'jar'
+                // 项目描述，复制我的话，这里需要修改。
+                name 'aopplugin'// 可选，项目名称。
+                description 'aopplugin'// 可选，项目描述。
+                url siteUrl // 项目主页，这里是引用上面定义好。
+
+                // 软件开源协议，现在一般都是Apache License2.0吧，复制我的，这里不需要修改。
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                //填写开发者基本信息，复制我的，这里需要修改。
+                developers {
+                    developer {
+                        id 'tdlbs' // 开发者的id。
+                        name 'mark' // 开发者名字。
+                        email 'guhao561@gmail.com' // 开发者邮箱。
+                    }
+                }
+
+                // SCM，复制我的，这里不需要修改。
+                scm {
+                    connection gitUrl // Git仓库地址。
+                    developerConnection gitUrl // Git仓库地址。
+                    url siteUrl // 项目主页。
+                }
+            }
+        }
+    }
+}
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+bintray {
+    user = properties.getProperty("bintray.user") // Bintray的用户名。
+    key = properties.getProperty("bintray.apikey") // Bintray刚才保存的ApiKey。
+
+    configurations = ['archives']
+    pkg {
+        repo = "tdaop-plugin"  //Repository名字 需要自己在bintray网站上先添加
+        name = "tdaop-plugin"// 发布到Bintray上的项目名字，这里的名字不是compile 'com.ansen.library:circleimage:1.0.1'中的circleimage。
+        userOrg = 'tdlbs'//Bintray的组织id
+        websiteUrl = siteUrl
+        vcsUrl = gitUrl
+        licenses = ["Apache-2.0"]
+        publish = true // 是否是公开项目。
+    }
+}
